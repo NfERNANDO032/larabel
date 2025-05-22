@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
 use App\Models\User;
 class UserController extends Controller
@@ -34,11 +35,14 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request){
+        $remember_token =bin2hex(random_bytes(10));
         $user= new User();
         $user->name=$request->nombre;
         $user->email=$request->correo;
         $user->password=bcrypt($request->password);
+        $user->remember_token= $remember_token;
         $user->save();
+        $user ->notify(new UserNotification());
 
         return redirect()->back();
 

@@ -30,9 +30,28 @@ Route::post('/login', [LoginController::class, 'login']);//->name('login.secion'
 // Página protegida que muestra "Hola mundo"
 Route::get('/holamundo', function () {
     return view('holamundo');
-})->middleware('auth'); // Solo usuarios autenticados pueden entrar
+})->middleware(['auth', 'verified']); // 👈 solo accede si verificó el correo
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+//correo 
+Route::middleware(['auth', 'account'])->group(function(){
+    Route::get('/logout', [LoginController::class, 'logout']);
+    Route::get('/usuarios', [UserController::class, 'index']);
+    Route::delete('/usuarios/{id}', [UserController::class, 'destroy']);
+
+
+
+
+});
+Route::get('/users/active/account/{token}', [LoginController::class, 'validateAccount']);
+
+
+
+
+
+
+
 
 
 
