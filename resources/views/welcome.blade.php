@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Usuario Espacial 🚀</title>
+    <title>Registro de Usuario Espacial Para que Confirma</title>
     <style>
         * {
             box-sizing: border-box;
@@ -101,6 +101,15 @@
             background: linear-gradient(to right, #3a7bd5, #00d2ff);
         }
 
+        .btn-login {
+            margin-top: 15px;
+            background: linear-gradient(to right, #667eea, #764ba2) !important;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(to right, #764ba2, #667eea) !important;
+        }
+
         @media (max-width: 500px) {
             .form-container {
                 padding: 20px;
@@ -113,24 +122,24 @@
 
     <div class="stars"></div>
     <div class="form-container">
-        <h2>🌌 Registro Galáctico</h2>
+        <h2>🌌 Registro Galáctico Xd</h2>
 
         {{-- Mostrar mensaje de éxito si existe --}}
         @if(session('success'))
-        <div style="background: #28a745; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-            {{ session('success') }}
-        </div>
+            <div style="background: #28a745; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                {{ session('success') }}
+            </div>
         @endif
 
         {{-- Mostrar errores si existen --}}
         @if ($errors->any())
-        <div style="background: #dc3545; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-            <ul style="margin: 0;">
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+            <div style="background: #dc3545; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <ul style="margin: 0;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
 
         <form action="{{ route('registro.store') }}" method="POST">
@@ -159,10 +168,21 @@
             </select>
 
             <button type="submit">🚀 Registrar</button>
+            <div>
+                <a href="/login" class="btn-add">iniciar sesión
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h7a4 4 0 0 1 4 4v2"></path>
+                        <polyline points="17 21 21 17 17 13"></polyline>
+                        <line x1="21" y1="17" x2="9" y2="17"></line>
+                    </svg>
+                </a>
+            </div>
         </form>
 
-    </div>
 
+
+    </div>
 
 
 </body>

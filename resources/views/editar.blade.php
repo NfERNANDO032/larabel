@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Usuario Espacial 🚀</title>
+    <title>Actualizar Usuario Espacial</title>
     <style>
         * {
             box-sizing: border-box;
@@ -101,6 +101,35 @@
             background: linear-gradient(to right, #3a7bd5, #00d2ff);
         }
 
+        /* Botón Volver */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: rgba(30, 42, 56, 0.8);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: rgba(0, 210, 255, 0.1);
+            border-color: #00d2ff;
+        }
+
+        .btn-back svg {
+            width: 16px;
+            height: 16px;
+            stroke: #00d2ff;
+        }
+
         @media (max-width: 500px) {
             .form-container {
                 padding: 20px;
@@ -110,30 +139,27 @@
 </head>
 
 <body>
-
     <div class="stars"></div>
     <div class="form-container">
-        <h2>🌌 Registro Galáctico</h2>
+        <h2>🌌 Actualizar Usuario Galáctico</h2>
 
-        {{-- Mostrar mensaje de éxito si existe --}}
         @if(session('success'))
-        <div style="background: #28a745; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-            {{ session('success') }}
-        </div>
+            <div style="background: #28a745; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                {{ session('success') }}
+            </div>
         @endif
 
-        {{-- Mostrar errores si existen --}}
         @if ($errors->any())
-        <div style="background: #dc3545; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-            <ul style="margin: 0;">
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+            <div style="background: #dc3545; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <ul style="margin: 0;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
 
-        <form action="/usuarios/actualizar/{{ $usuario->id }}" method="POST ">
+        <form action="/usuarios/actualizar/{{ $usuario->id }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -144,28 +170,30 @@
             <input type="email" id="correo" name="correo" value="{{ $usuario->email }}" placeholder="correo@ejemplo.com" required>
 
             <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" placeholder="000-000-0000">
+            <input type="text" id="telefono" name="telefono" value="{{ $usuario->telefono }}" placeholder="000-000-0000">
 
             <label for="username">Nombre de usuario:</label>
-            <input type="text" id="username" name="username" placeholder="usuario123" required>
+            <input type="text" id="username" name="username" value="{{ $usuario->username }}" placeholder="usuario123" required>
 
-            <label for="password">Contraseña:</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required>
+            <label for="password">Contraseña (dejar en blanco para no cambiar):</label>
+            <input type="password" id="password" name="password" placeholder="••••••••">
 
             <label for="rol">Rol:</label>
             <select id="rol" name="rol" required>
-                <option value="">-- Selecciona un roles --</option>
-                <option value="admin">Administrador</option>
-                <option value="user">Usuario</option>
+                <option value="">-- Selecciona un rol --</option>
+                <option value="admin" {{ $usuario->rol == 'admin' ? 'selected' : '' }}>Administrador</option>
+                <option value="user" {{ $usuario->rol == 'user' ? 'selected' : '' }}>Usuario</option>
             </select>
 
             <button type="submit">🚀 Actualizar</button>
+            
+            <a href="{{ route('usuarios.index') }}" class="btn-back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Volver a usuarios
+            </a>
         </form>
-
     </div>
-
-
-
 </body>
-
 </html>

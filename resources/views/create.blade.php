@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Usuario Espacial 🚀</title>
+    <title>Registro de Usuario Espacial  para que confirmes🚀</title>
     <style>
         * {
             box-sizing: border-box;

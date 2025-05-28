@@ -25,7 +25,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
  
-            return redirect('/holamundo');
+            return redirect()->route('usuarios.index'); // 👈 redirige a la ruta deseada después del inicio de sesión exitoso
         }
  
         return back()->with('error', 'Credenciales incorrectas.')->withInput();

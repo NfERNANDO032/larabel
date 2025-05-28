@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
 use App\Models\User;
+
 class UserController extends Controller
 {
     /**
@@ -14,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-          $usuarios = User::all();
+         $usuarios = User::withCount('blogs')->get();
          return view('usuarios', compact('usuarios'));
     }
 
@@ -110,6 +111,13 @@ class UserController extends Controller
 
     // Redirigir con mensaje de éxito
     return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
+}
+public function showPosts($id)
+{
+    $usuario = User::findOrFail($id);
+    $posts = $usuario->posts; // Asumiendo que tienes la relación definida
+    
+    return view('user.posts', compact('usuario', 'posts'));
 }
 
 
