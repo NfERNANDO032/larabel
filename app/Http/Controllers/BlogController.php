@@ -2,107 +2,89 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Blog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\Blog;
 
 class BlogController extends Controller
 {
-    // Mostrar el formulario
-    public function create()
-    {
-        return view('blog.create');
-
-    }
-
-    // Procesar el formulario
-    public function store(Request $request)
-    {
-        $remember_token = bin2hex(random_bytes(10));
-        $blog = new Blog();
-        $blog->title = $request->title;
-        $blog->content = $request->content;
-
-        $blog->user_id = Auth::user()->id;
-
-
-        $blog->save();
-
-
-        return redirect()->back()->with('success', '¡Registro exitoso!');
-
-        dd($request->all());
-        // Aquí iría el modelo, por ejemplo:
-        // Post::create($validated);
-
-        //return redirect()->route('c')->with('success', '¡Publicación creada exitosamente!');
-    }
-
+    // 🔍 Mostrar todos los blogs
     public function index()
     {
-        return view(''); // Asegúrate de tener la vista correspondiente
+        return response()->json(Blog::all(), 200);
     }
 
-    public function userPosts($id)
-    {
-        $user = User::findOrFail($id);
-        $blogs = $user->blogs;   // <-- cambio de $posts a $blogs
-
-        return view('blog.user-posts', compact('user', 'blogs'));
-    }
+    // 👁️ Ver un blog específico
     public function show($id)
     {
-        $blog = Blog::findOrFail($id);
-        return view('blog.show', compact('blog'));
-    }
-    public function edit($id)
-    {
-        $blog = Blog::findOrFail($id);
-
-        // Sólo el autor puede editar
-        if ($blog->user_id !== Auth::id()) {
-            abort(403);
+        $blog = Blog::find($id);
+        if (!$blog) {
+            return response()->json(['error' => 'Blog no encontrado'], 404);
         }
-
-        return view('blog.edit', compact('blog'));
+        return response()->json($blog, 200);
     }
-    public function update(Request $request, $id)
-    {
-        $blog = Blog::findOrFail($id);
 
-        if ($blog->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        // Valida antes de guardar
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-        ]);
-
-        $blog->update($data);
-
-        return redirect()
-            ->route('posts.show', $blog->id)
-            ->with('success', 'Blog actualizado correctamente.');
-    }
-    public function destroy($id)
+    // ➕ Crear un nuevo blog
+   public function store(Request $request)
 {
-    $blog = Blog::findOrFail($id);
+    $request->validate([
+        'title' => 'required|string',
+        'content' => 'required|string',
+        'user_id' => 'required|exists:users,id'
+    ]);
 
-    if ($blog->user_id !== Auth::id()) {
-        abort(403);
+    $blog = Blog::create([
+        'title' => $request->title,
+        'content' => $request->content,
+        'user_id' => $request->user_id
+    ]);
+
+    return response()->json(['message' => 'Blog creado con éxito', 'blog' => $blog], 201);
+}
+
+
+    // ✏️ Actualizar un blog
+   public function update(Request $request, $id)
+{
+    $blog = Blog::find($id);
+    if (!$blog) {
+        return response()->json(['error' => 'Blog no encontrado'], 404);
     }
 
-    $blog->delete();
+    $request->validate([
+        'title' => 'sometimes|required|string',
+        'content' => 'sometimes|required|string',
+    ]);
 
-    return redirect()
-        ->route('user.posts', $blog->user_id)
-        ->with('success', 'Blog eliminado correctamente.');
+    if ($request->has('title')) {
+        $blog->title = $request->title;
+    }
+    if ($request->has('content')) {
+        $blog->content = $request->content;
+    }
+
+    $blog->save();
+
+    return response()->json(['message' => 'Blog actualizado con éxito', 'blog' => $blog], 200);
 }
 
 
+    // 🗑️ Eliminar blog
+    public function destroy($id)
+    {
+        $blog = Blog::find($id);
+        if (!$blog) {
+            return response()->json(['error' => 'Blog no encontrado'], 404);
+        }
 
+        $blog->delete();
+
+        return response()->json(['message' => 'Blog eliminado con éxito'], 200);
+    }
+
+    // 👤 Ver blogs de un usuario
+    public function userBlogs($userId)
+    {
+        $blogs = Blog::where('user_id', $userId)->get();
+        return response()->json($blogs, 200);
+    }
 }
-

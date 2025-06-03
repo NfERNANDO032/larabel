@@ -15,8 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-         $usuarios = User::withCount('blogs')->get();
-         return view('usuarios', compact('usuarios'));
+          return response()->json(User::all(), 200);
     }
 
     /**
@@ -45,7 +44,9 @@ class UserController extends Controller
         $user->save();
         $user ->notify(new UserNotification());
 
-        return redirect()->back();
+        return redirect()->json([
+            'mensaje' => 'Usuario creado correctamente'
+        ], 201);
 
     }
     
@@ -57,8 +58,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
-          $usuario = User::find($id);
-         return view('editar', compact('usuario'));
+         
+         $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+        return response()->json($user, 200);
     }
 
     /**
@@ -67,10 +72,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
-    }
+    
 
     /**
      * Update the specified resource in storage.
@@ -79,15 +81,36 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        $user = User::find($id);
-        $user->name=$request->nombre;
-        $user->email=$request->correo;
-        $user->password=bcrypt($request->password);
-        $user->save();
-        return redirect('/usuarios');
+public function update(Request $request, $id)
+{
+    $user = User::find($id);
+    if (!$user) {
+        return response()->json(['error' => 'Usuario no encontrado'], 404);
     }
+
+    $request->validate([
+        'name' => 'sometimes|required|string',
+        'email' => 'sometimes|required|string|email|unique:users,email,' . $id,
+        'password' => 'sometimes|required|string|min:6',
+    ]);
+
+    if ($request->has('name')) {
+        $user->name = $request->name;
+    }
+
+    if ($request->has('email')) {
+        $user->email = $request->email;
+    }
+
+    if ($request->filled('password')) {
+        $user->password = bcrypt($request->password);
+    }
+
+    $user->save();
+
+    return response()->json(['message' => 'Usuario actualizado con éxito', 'user' => $user], 200);
+}
+
 
 
     /**
@@ -96,22 +119,17 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-{
-    // Buscar al usuario por ID
-    $usuario = User::find($id);
+      public function destroy($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
 
-    // Verificar si el usuario existe
-    if (!$usuario) {
-        return redirect()->back()->with('error', 'Usuario no encontrado.');
+        $user->delete();
+
+        return response()->json(['message' => 'Usuario eliminado con éxito'], 200);
     }
-
-    // Eliminar el usuario
-    $usuario->delete();
-
-    // Redirigir con mensaje de éxito
-    return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
-}
 public function showPosts($id)
 {
     $usuario = User::findOrFail($id);
